@@ -87,3 +87,37 @@ mut_contract.insert_code_at(mut_contract.token.Contract.tail,
 mut_contract.dump()
 ```
 
+### Combining with Slither
+
+Since the Slither nesting is almost identical it's easy to filter for specific information in Slither and insert based
+on that. As a meaningless example, lets say we want to insert `return true;` at the start of every function that has a
+modifier. When we find that in the loop below (see `chain =`) we cannot simply
+say `mut_contract.token.contract_name.functions.func.name` as half would be an actual variable but the rest
+strings (`"functions"`). To fix this we can first
+call [reduce](https://docs.python.org/3/library/functools.html#functools.reduce) and use the result to
+access `mut_contract.token`, voila :)
+
+```python
+from MutableContract import MutableContract
+from slither.slither import Slither
+from functools import reduce
+import operator
+from slither.core.declarations.modifier import Modifier
+
+solidity_file = 'original.sol'
+mut_contract = MutableContract(solidity_file)
+slither = Slither(solidity_file)
+
+for contract in slither.contracts:
+    for func in contract.functions:
+        for icall in func._internal_calls:
+            if isinstance(icall, Modifier):
+                print(func.name)
+                chain = [contract.name, 'functions', func.name]
+                chain = reduce(operator.getitem, chain, mut_contract.token)
+                mut_contract.insert_code_at(chain, b'return True;', 'within.start')
+                break
+
+mut_contract.dump()
+
+```
