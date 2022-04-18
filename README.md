@@ -9,14 +9,20 @@ A wrapper around [Slither](https://github.com/crytic/slither) to insert pieces o
 - Dump the output to a new file with the suffix `_inserted`. 
 
 ---
-
-Just add a piece of code `before`, `after` or `within` a specified location. 
+#### Short explanation
+Each contract in the `.sol` has a
+- `.head` and `.tail` (see below) for which only `within` insertions are possible, so `within.start`, `within.end` (not `before` and `after`)
+-  `functions.XXX` for which `before`, `after`, `within`, `within.start` and `within.end` are possible
+-  the Contract iself, for which `before` and `after` are possible, handy to insert an interface for example
+- 
+More detail below
 
 <b> 1. Create mutable contract object </b>
   
   ```python
   mut_contract = MutableContract('original.sol')
   ```
+  
 
 #### 1. Add state vars
 
@@ -55,7 +61,17 @@ mut_contract.insert_code_at(mut_contract.token.Contract.functions.constructor,
                             where='before')
 ```
 
-#### 5. ETC...
+#### 5. Add core before a contract; interface e.g.
+```python
+mut_contract.insert_code_at(mut_contract.token.Contract,
+                            '''interface CoolInterface {
+    function magic() external pure returns (uint256);
+}
+'''.encode('utf-8'),
+                            where='before')
+```
+
+#### 5. Etc...
 
 #### 6. Write output to the new .sol file
 ```python
