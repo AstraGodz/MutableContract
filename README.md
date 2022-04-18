@@ -61,7 +61,7 @@ mut_contract.insert_code_at(mut_contract.token.Contract.functions.constructor,
                             where='before')
 ```
 
-#### 5. Add core before a contract; interface e.g.
+#### 5. Add code before a contract; interface e.g.
 
 ```python
 mut_contract.insert_code_at(mut_contract.token.Contract,
