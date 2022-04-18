@@ -12,8 +12,8 @@ A wrapper around [Slither](https://github.com/crytic/slither) to insert pieces o
 
 ### Requirements
 - [`Slither`](https://github.com/crytic/slither)
-- [Addict](https://github.com/mewwts/addict)
-- [Numpy](https://github.com/numpy/numpy)
+- [`Addict`](https://github.com/mewwts/addict)
+- [`Numpy`](https://github.com/numpy/numpy)
 
   
   ---
