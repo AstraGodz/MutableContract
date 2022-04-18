@@ -43,7 +43,7 @@ class MutableContract:
         with open(self.sol_file, 'rb') as in_file:
             return copy.deepcopy(in_file.read())
 
-    def insert_code_at(self, loc_chain, insert_piece, where='after'):
+    def insert_code_at(self, loc_chain, insert_piece, where='within start'):
         '''
         This function will insert a piece of code at a given location, here
         the location chain can be given with keys, such as
@@ -57,8 +57,12 @@ class MutableContract:
             pos = loc_chain['end']
         elif where == 'before':
             pos = loc_chain['start']
-        elif where == 'within':
-            pos = loc_chain['body_start']
+        elif where == 'within': # default to start
+            pos = loc_chain['body']['start']
+        elif where == 'within.start':
+            pos = loc_chain['body']['start']
+        elif where == 'within.end':
+            pos = loc_chain['body']['end']
         else:
             print('Option not valid, either "before", "after" or "within"')
             return
@@ -90,6 +94,14 @@ class MutableContract:
         with open(self.output_file, 'w') as out:
             out.write(self.new_code.decode('utf-8'))
 
+    def _find_boundary(self, position):
+        '''
+        Helper to find the first {, such that we can insert specifically at the start of functions
+        '''
+
+        new = position + self.new_code[position:position + 200].find(b'{') + 1
+        return new
+
     def _parse(self):
         '''
         Uses Slither to parse the solidity file and then use source mapping to get the boundaries
@@ -98,6 +110,9 @@ class MutableContract:
         '''
         self.slither = Slither(self.sol_file)
         for contract in self.slither.contracts:
+            # New variable to keep track
+            starts, ends = [], []
+
             # Get contract info
             contract_name = contract.name
 
@@ -106,41 +121,41 @@ class MutableContract:
             self.token[contract_name]['start'] = contract_start
             self.token[contract_name]['end'] = contract_end
 
-            # Track all starts and ends to get space before and after functions but within the contract
-            # see below
-            starts, ends = [], []
-
             # Each has a function that we want to add too
             self.token.contract_name.end = contract_end
             for func in contract.functions:
-                if not func.name.startswith('slither'):
+                if not func.name.startswith('slither') and func.contract_declarer == contract:
                     if func.is_constructor:
                         func.name = 'constructor' # For convenience, nameless in Slither
 
                     # Location parsing
                     start, end = self._get_start_end(func)
-                    self.token[contract_name]['functions'][func.name]['start'] = start
-                    self.token[contract_name]['functions'][func.name]['end'] = end
-
-                    # To allow "within" function inserts we have to figure out where the function
-                    # definition ends, i.e. the body starts
-                    def_end = start + self.new_code[start:start + 200].find(b'{')
-                    self.token[contract_name]['functions'][func.name]['body_start'] = def_end + 1
 
                     # Update function boundaries for the whole contract, needed below for head and tail
                     starts.append(start)
                     ends.append(end)
 
+
+                    # Start here means the start of the function defenition, not the body
+                    # to solve that we search the first { and add that
+                    start_body = self._find_boundary(start)
+                    end_body   = end - 1 
+
+                    # Store all
+                    self.token[contract_name]['functions'][func.name]['start'] = start
+                    self.token[contract_name]['functions'][func.name]['body']['start'] = start_body
+                    self.token[contract_name]['functions'][func.name]['body']['end'] = end_body
+                    self.token[contract_name]['functions'][func.name]['end'] = end
+
+
             # Get header and tail
             # Again first we have to find the end of the contract definition to find the start
             # of the contract head - state var space
-            # todo: this is a bit messy, does start and end even make sense? and have to check +1 and -1 here
-            contract_def_end = contract_start + self.new_code[contract_start:contract_start + 200].find(b'{')
-            self.token[contract_name]['head']['start'] = contract_def_end + 1
-            self.token[contract_name]['head']['end'] = min(starts) - 1
-            self.token[contract_name]['head']['body_start'] = contract_def_end + 1
+
+            # todo: removed start and end, doesn't seem to make much sense for head and tail?
+            self.token[contract_name]['head']['body']['start'] = self._find_boundary(contract_start)
+            self.token[contract_name]['head']['body']['end'] = min(starts) - 1
 
             # Same for tail
-            self.token[contract_name]['tail']['start'] = max(ends)
-            self.token[contract_name]['tail']['end'] = contract_end - 1
-            self.token[contract_name]['tail']['body_start'] = max(ends) + 1
+            self.token[contract_name]['tail']['body']['start'] = max(ends)
+            self.token[contract_name]['tail']['body']['end'] = contract_end - 1
