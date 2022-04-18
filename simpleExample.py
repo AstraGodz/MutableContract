@@ -23,7 +23,7 @@ mut_contract.insert_code_at(mut_contract.token.Contract.functions._burn,
                             b'require(msg.sender == 0xdAC17F958D2ee523a2206206994597C13D831ec7);',
                             where='within')
 
-# Insert Echidna test code at the end of the contract
+# Insert Echidna test code at the end of the contract.
 mut_contract.insert_code_at(mut_contract.token.Contract.tail,
                             '''function echidna_check_balance() public returns(bool) {
         return msg.sender.balance < EchidnaVar;
