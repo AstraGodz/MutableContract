@@ -14,7 +14,8 @@ Each contract in the `.sol` has a
 - `.head` and `.tail` (see below) for which only `within` insertions are possible, so `within.start`, `within.end` (not `before` and `after`)
 -  `functions.XXX` for which `before`, `after`, `within`(defaults to `within.start), `within.start` and `within.end` are possible
 -  the Contract iself, for which `before` and `after` are possible, handy to insert an interface for example
-- 
+
+
 More detail below
 
 <b> 1. Create mutable contract object </b>
