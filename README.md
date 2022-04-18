@@ -10,7 +10,7 @@ A wrapper around [Slither](https://github.com/crytic/slither) to insert pieces o
 
 ---
 
-Just add a piece of code `before`, `after` or within a specified location. 
+Just add a piece of code `before`, `after` or `within` a specified location. 
 
 <b> 1. Create mutable contract object </b>
   
