@@ -10,6 +10,15 @@ A wrapper around [Slither](https://github.com/crytic/slither) to insert pieces o
 
 ---
 
+### Requirements
+- [`Slither`](https://github.com/crytic/slither)
+- [Addict](https://github.com/mewwts/addict)
+- [Numpy](https://github.com/numpy/numpy)
+
+  
+  ---
+  
+  
 ### Object usage examples
 
 <b> 1. Create mutable contract object </b>
@@ -17,6 +26,7 @@ A wrapper around [Slither](https://github.com/crytic/slither) to insert pieces o
   ```python
   mut_contract = MutableContract('original.sol')
   ```
+
   
 
 #### 1. Add state vars
@@ -87,6 +97,8 @@ mut_contract.insert_code_at(mut_contract.token.Contract.tail,
 mut_contract.dump()
 ```
 
+---
+
 ### Multiple subsequent inserts
 Since the positions are calculated based on previous inserts we can also insert multiple functions at the _same_ location:
 ```python
@@ -98,6 +110,7 @@ for i in range(10):
                                 where='within')
 
 ```
+---
 
 ### Combining with Slither
 
