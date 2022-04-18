@@ -104,7 +104,6 @@ class MutableContract:
         Helper to find the first {, such that we can insert specifically at the start of functions
         I guess 200 should be sufficient to scan for the closing }, otherwise it's a loooooonggg def
         '''
-
         new = position + self.new_code[position:position + 200].find(b'{') + 1
         return new
 
@@ -155,7 +154,6 @@ class MutableContract:
             # Get header and tail
             # Again first we have to find the end of the contract definition to find the start
             # of the contract head - state var space
-
             self.token[contract.name]['head']['body']['start'] = self._find_boundary(contract_start)
             self.token[contract.name]['head']['body']['end'] = min(starts) - 1
 

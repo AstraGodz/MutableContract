@@ -28,7 +28,7 @@ mut_contract.insert_code_at(mut_contract.token.Contract.tail,
                             '''function echidna_check_balance() public returns(bool) {
         return msg.sender.balance < EchidnaVar;
     }'''.encode('utf-8'),
-                            where='after')
+                            where='within')
 
 # Insert an interface before the contract, can also be after for example
 mut_contract.insert_code_at(mut_contract.token.Contract,
