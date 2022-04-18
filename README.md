@@ -27,7 +27,7 @@ For example to insert code inside the "head" of the contract, i.e. where state v
 
 mut_contract.insert_code_at(mut_contract.token.Contract.head,
                             b'uint256 public EchidnaVar;',
-                            where='within')
+                            where='within.start')
 ```
 (Note, always have to use `.token` followed by whereever you want to insert)
 
@@ -35,7 +35,7 @@ mut_contract.insert_code_at(mut_contract.token.Contract.head,
 ```Python
 mut_contract.insert_code_at(mut_contract.token.Contract.functions.constructor,
                             b'EchidnaVar = 10;',
-                            where='within')
+                            where='within.end')
 ```
 
 #### 3. Add code within a function
