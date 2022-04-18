@@ -12,7 +12,7 @@ A wrapper around [Slither](https://github.com/crytic/slither) to insert pieces o
 #### Short explanation
 Each contract in the `.sol` has a
 - `.head` and `.tail` (see below) for which only `within` insertions are possible, so `within.start`, `within.end` (not `before` and `after`)
--  `functions.XXX` for which `before`, `after`, `within`, `within.start` and `within.end` are possible
+-  `functions.XXX` for which `before`, `after`, `within`(defaults to `within.start), `within.start` and `within.end` are possible
 -  the Contract iself, for which `before` and `after` are possible, handy to insert an interface for example
 - 
 More detail below
@@ -45,7 +45,7 @@ mut_contract.insert_code_at(mut_contract.token.Contract.functions.constructor,
 ```
 
 #### 3. Add code within a function
-I should modify this such that we can say where to insert code within the function, like `function_start` or `function_end`, anyway for now it will just write at the start of the function. So for example to restrict the users calling `_burn` we can do:
+So for example to restrict the users calling `_burn` we can do:
 
 ```python
 mut_contract.insert_code_at(mut_contract.token.Contract.functions._burn,
