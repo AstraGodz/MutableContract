@@ -13,7 +13,7 @@ class MutableContract:
         # Rewrite to, could also use fileinput with inplace to directly modify the original
         self.output_file = rewrite_to if rewrite_to else '{}inserted.sol'.format(sol_file.rstrip('sol'))
         self.new_code = self._copy_input_code()
-
+        
         # Will use addict as token object to mimic Slither nesting (see below)
         self.token = Dict()
         self.slither = None
