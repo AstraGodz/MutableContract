@@ -11,7 +11,7 @@ class MutableContract:
         self.sol_file = sol_file
 
         # Rewrite to, could also use fileinput with inplace to directly modify the original
-        self.output_file = rewrite_to if rewrite_to else '{}_inserted.sol'.format(sol_file.rstrip('.sol'))
+        self.output_file = rewrite_to if rewrite_to else '{}inserted.sol'.format(sol_file.rstrip('sol'))
         self.new_code = self._copy_input_code()
 
         # Will use addict as token object to mimic Slither nesting (see below)
@@ -51,7 +51,6 @@ class MutableContract:
         or directly from this object like:
         - self.token.contract_name.functions.func_name
         It then uses the start and end information to place the piece correctly
-        todo: make before and after more specific like before_start, after_start, before_end etc.
         '''
         if where == 'after':
             pos = loc_chain['end']
@@ -64,7 +63,7 @@ class MutableContract:
         elif where == 'within.end':
             pos = loc_chain['body']['end']
         else:
-            print('Option not valid, either "before", "after" or "within"')
+            print('Option not valid, either "before", "after" or "within", "within.start", "within.end"')
             return
         self.insert_code(pos, insert_piece)
 
@@ -89,7 +88,8 @@ class MutableContract:
 
     def dump(self):
         '''
-        Dumps rewritten code to a file
+        Dumps rewritten code to a file, we worked in bytes all the time to prevent non-ascii shift, hence
+        we have to encode again before writing
         '''
         with open(self.output_file, 'w') as out:
             out.write(self.new_code.decode('utf-8'))
@@ -97,6 +97,7 @@ class MutableContract:
     def _find_boundary(self, position):
         '''
         Helper to find the first {, such that we can insert specifically at the start of functions
+        I guess 200 should be sufficient to scan for the closing }, otherwise it's a loooooonggg def
         '''
 
         new = position + self.new_code[position:position + 200].find(b'{') + 1
@@ -106,11 +107,13 @@ class MutableContract:
         '''
         Uses Slither to parse the solidity file and then use source mapping to get the boundaries
         of the contract, functions, and space inbetween
-        :return:
         '''
         self.slither = Slither(self.sol_file)
         for contract in self.slither.contracts:
-            # New variable to keep track
+
+            # We will store all the start and end locations of the functions such that we can
+            # later determine the space between the contract and the first function (i.e. where the
+            # state vars are) and the "tail", space between last function and end of cotnract
             starts, ends = [], []
 
             # Get contract info
@@ -122,7 +125,6 @@ class MutableContract:
             self.token[contract_name]['end'] = contract_end
 
             # Each has a function that we want to add too
-            self.token.contract_name.end = contract_end
             for func in contract.functions:
                 if not func.name.startswith('slither') and func.contract_declarer == contract:
                     if func.is_constructor:
@@ -135,8 +137,7 @@ class MutableContract:
                     starts.append(start)
                     ends.append(end)
 
-
-                    # Start here means the start of the function defenition, not the body
+                    # Start here means the start of the function definition, not the body
                     # to solve that we search the first { and add that
                     start_body = self._find_boundary(start)
                     end_body   = end - 1 
