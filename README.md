@@ -87,6 +87,18 @@ mut_contract.insert_code_at(mut_contract.token.Contract.tail,
 mut_contract.dump()
 ```
 
+### Multiple subsequent inserts
+Since the positions are calculated based on previous inserts we can also insert multiple functions at the _same_ location:
+```python
+for i in range(10):
+    mut_contract.insert_code_at(mut_contract.token.Contract.tail,
+                                '''function echidna_check_balance_{}() public returns(bool) {{
+            return msg.sender.balance < EchidnaVar;
+        }}'''.format(i).encode('utf-8'),
+                                where='within')
+
+```
+
 ### Combining with Slither
 
 Since the Slither nesting is almost identical it's easy to filter for specific information in Slither and insert based
