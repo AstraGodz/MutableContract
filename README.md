@@ -47,7 +47,7 @@ mut_contract.insert_code_at(mut_contract.token.Contract.functions._burn,
                             where='within')
 ```
 
-### 4. Add code before a function
+#### 4. Add code before a function
 Not sure when you would need this but it's possible :)
 ```python
 mut_contract.insert_code_at(mut_contract.token.Contract.functions.constructor,
