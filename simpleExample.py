@@ -1,6 +1,6 @@
 from MutableContract import MutableContract
 
-mut_contract = MutableContract('Contract.sol')
+mut_contract = MutableContract('original.sol')
 
 mut_contract.insert_code_at(mut_contract.token.Contract.head,
                             b'uint256 public EchidnaVar;',
