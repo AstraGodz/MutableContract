@@ -4,11 +4,11 @@ mut_contract = MutableContract('original.sol')
 
 mut_contract.insert_code_at(mut_contract.token.Contract.head,
                             b'uint256 public EchidnaVar;',
-                            where='within')
+                            where='within.start')
 
 mut_contract.insert_code_at(mut_contract.token.Contract.functions.constructor,
                             b'EchidnaVar = 10;',
-                            where='within')
+                            where='within.end')
 
 mut_contract.insert_code_at(mut_contract.token.Contract.functions.constructor,
                             b'uint256 public pairAdd;',
