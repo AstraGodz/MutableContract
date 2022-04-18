@@ -67,9 +67,9 @@ mut_contract.insert_code_at(mut_contract.token.Contract,
                             where='before')
 ```
 
-#### 6. Etc...
+#### 6. Add a function to a contract.
 
-We can also add a function to a contract by inserting it "before" the Contract itself, like:
+We can also add a function to a contract by inserting it in the Contract tail, like:
 
 ```python
 mut_contract.insert_code_at(mut_contract.token.Contract.tail,
@@ -79,7 +79,9 @@ mut_contract.insert_code_at(mut_contract.token.Contract.tail,
                             where='within')
 ```
 
-#### 7. Write output to the new .sol file
+#### 7. Etc.. any insert
+
+#### 8. Write output to the new .sol file
 
 ```python
 mut_contract.dump()
