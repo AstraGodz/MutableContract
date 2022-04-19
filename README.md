@@ -18,7 +18,7 @@ A wrapper around [Slither](https://github.com/crytic/slither) to insert pieces o
   
   ---
   
-  
+
 ### Object usage examples
 
 <b> 1. Create mutable contract object </b>
@@ -146,3 +146,10 @@ for contract in slither.contracts:
 mut_contract.dump()
 
 ```
+### Features
+
+- [x] **Insert** code in random order
+- [ ] Allow **removal** at positions, should be easy - populate `locs` with `-` values instead of `+`
+- [ ] Allow **replacement**, similair to inserts, however, have to think of what would be useful to remove and how to index that. Such that we can say "remove all onlyOwner" modifiers. This info could be parsed from Slither, indexed and then the ojbect should be able to receive a Slither Modifier object that will be searched in the code.. hmm interesting :)
+
+  
